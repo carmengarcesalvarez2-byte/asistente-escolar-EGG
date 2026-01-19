@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { GeminiService } from './services/geminiService';
+import { GeminiService } from './geminiService';
 import { Message } from './types';
 import { SCHOOL_DATA } from './constants';
 
@@ -53,7 +53,6 @@ const App: React.FC = () => {
     setMessages(prev => [...prev, botMessage]);
     setIsLoading(false);
 
-    // Si el mensaje del bot indica que ya tiene los datos, mostramos el botón de acción
     if (responseText.includes("botón verde de abajo")) {
       setTimeout(() => {
         setMessages(prev => [...prev, {
@@ -68,12 +67,9 @@ const App: React.FC = () => {
   };
 
   const sendToWhatsApp = () => {
-    // Buscamos el último mensaje del usuario para extraer los datos o simplemente enviamos el historial relevante
     const lastUserMsgs = messages.filter(m => m.role === 'user').slice(-4);
     const summary = lastUserMsgs.map(m => m.text).join('\n');
-    
     const messageToSecretary = `*SOLICITUD DE CERTIFICADO - E.G.G.*\n\nUn representante ha solicitado un trámite a través de la Secretaría Virtual.\n\n*Detalles recopilados:*\n${summary}\n\n_Enviado desde el ChatBot de Tesis_`;
-    
     const encodedMessage = encodeURIComponent(messageToSecretary);
     window.open(`https://wa.me/${SCHOOL_DATA.phone}?text=${encodedMessage}`, '_blank');
   };
@@ -86,7 +82,6 @@ const App: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen max-w-2xl mx-auto shadow-2xl bg-white border-x border-slate-200">
-      {/* Header */}
       <header className="bg-[#1e3a8a] text-white p-5 flex items-center justify-between shadow-lg relative overflow-hidden">
         <div className="absolute top-0 right-0 w-32 h-full bg-green-600 opacity-20 -skew-x-12 translate-x-16"></div>
         <div className="flex items-center gap-4 z-10">
@@ -107,7 +102,6 @@ const App: React.FC = () => {
         </button>
       </header>
 
-      {/* Chat Area */}
       <main className="flex-1 overflow-y-auto p-4 bg-[#f1f5f9] space-y-4">
         {messages.map((msg) => (
           <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
@@ -117,7 +111,6 @@ const App: React.FC = () => {
                 : 'bg-white text-slate-800 border border-slate-200 rounded-tl-none shadow-sm'
             }`}>
               <div className="text-sm leading-relaxed whitespace-pre-line">{msg.text}</div>
-              
               {msg.isAction && (
                 <button 
                   onClick={sendToWhatsApp}
@@ -127,7 +120,6 @@ const App: React.FC = () => {
                   ENVIAR A WHATSAPP
                 </button>
               )}
-              
               <p className="text-[8px] mt-1.5 opacity-40 text-right uppercase font-bold">
                 {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </p>
@@ -148,7 +140,6 @@ const App: React.FC = () => {
         <div ref={messagesEndRef} />
       </main>
 
-      {/* Acciones Rápidas */}
       <div className="px-4 py-2 bg-white flex gap-2 overflow-x-auto border-t border-slate-100">
         {quickActions.map((action, idx) => (
           <button
@@ -162,7 +153,6 @@ const App: React.FC = () => {
         ))}
       </div>
 
-      {/* Input */}
       <footer className="p-4 bg-white border-t border-slate-200">
         <form onSubmit={(e) => { e.preventDefault(); handleSend(); }} className="flex gap-2">
           <input
